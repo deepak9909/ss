@@ -1,0 +1,37 @@
+#Hill cipher
+
+import numpy as np
+
+def mod_inverse(matrix, mod):
+    det = int(np.linalg.det(matrix)) % mod
+    det_inv = pow(det, -1, mod) 
+    matrix_inv = np.linalg.inv(matrix) * det_inv
+    matrix_inv = matrix_inv.round() % mod
+    return matrix_inv.astype(int)
+
+def hill_encrypt(plain_text, key_matrix):
+    n = key_matrix.shape[0]
+    plain_matrix = string_to_matrix(plain_text, n)
+    encrypted_matrix = (np.dot(key_matrix, plain_matrix)) % 26
+    return matrix_to_string(encrypted_matrix)
+
+def hill_decrypt(cipher_text, key_matrix):
+    n = key_matrix.shape[0]
+    key_matrix_inv = mod_inverse(key_matrix, 26)
+    cipher_matrix = string_to_matrix(cipher_text, n)
+    decrypted_matrix = (np.dot(key_matrix_inv, cipher_matrix)) % 26
+    return matrix_to_string(decrypted_matrix)
+
+key_matrix = np.array([[6, 24, 1], 
+                       [13, 16, 10], 
+                       [20, 17, 15]])
+
+plain_text = "HELLO"
+print("Plaintext:",plain_text)
+# Encrypt the plaintext
+encrypted_text = hill_encrypt(plain_text, key_matrix)
+print("Encrypted Text:", encrypted_text)
+
+# Decrypt the ciphertext
+decrypted_text = hill_decrypt(encrypted_text, key_matrix)
+print("Decrypted Text:", decrypted_text)

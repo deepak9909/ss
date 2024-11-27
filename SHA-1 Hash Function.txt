@@ -1,0 +1,13 @@
+# SHA-1 Hash Function Algorithm
+
+import hashlib
+
+data = "WHO GOES THERE?"
+
+sha1_hash = hashlib.sha1()
+
+sha1_hash.update(data.encode())
+
+hash_value = sha1_hash.hexdigest()
+
+print(f"SHA-1 Hash: {hash_value}")

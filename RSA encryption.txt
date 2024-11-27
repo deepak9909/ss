@@ -1,0 +1,59 @@
+#RSA encryption
+
+import random
+from math import gcd
+
+def is_prime(num):
+    if num <= 1:
+        return False
+    for i in range(2, int(num ** 0.5) + 1):
+        if num % i == 0:
+            return False
+    return True
+
+def generate_prime_candidate(start=100, end=300):
+    while True:
+        num = random.randint(start, end)
+        if is_prime(num):
+            return num
+
+def generate_keypair():
+    p = generate_prime_candidate()
+    q = generate_prime_candidate()
+
+    while p == q:
+        q = generate_prime_candidate()
+
+    n = p * q
+    phi = (p - 1) * (q - 1)
+
+    e = random.randint(2, phi - 1)
+    while gcd(e, phi) != 1:
+        e = random.randint(2, phi - 1)
+
+    d = pow(e, -1, phi)
+    return ((e, n), (d, n))
+
+def encrypt(public_key, plaintext):
+    e, n = public_key
+    cipher = [(ord(char) ** e) % n for char in plaintext]
+    return cipher
+
+def decrypt(private_key, ciphertext):
+    d, n = private_key
+    plain = [chr((char ** d) % n) for char in ciphertext]
+    return ''.join(plain)
+
+# Generate key pairs
+public_key, private_key = generate_keypair()
+print("Public Key:", public_key)
+print("Private Key:", private_key)
+
+# Encrypt a message
+message = "HELLO RSA"
+ciphertext = encrypt(public_key, message)
+print("Encrypted Message:", ciphertext)
+
+# Decrypt the message
+decrypted_message = decrypt(private_key, ciphertext)
+print("Decrypted Message:", decrypted_message)

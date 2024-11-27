@@ -1,0 +1,18 @@
+To implement MDS algorithm in python
+
+import hashlib
+
+def md5_hash(message):
+    # Create an MD5 hash object
+    md5 = hashlib.md5()
+    
+    # Update the hash object with the bytes of the message
+    md5.update(message.encode('utf-8'))
+    
+    # Retrieve the hexadecimal representation of the hash
+    return md5.hexdigest()
+
+# Example usage
+message = input("Enter a message to hash using MD5: ")
+hashed_message = md5_hash(message)
+print(f"MD5 Hash: {hashed_message}")

@@ -1,0 +1,72 @@
+To implement DSA(Digital Signature Algoritghm) in python
+
+import random
+from hashlib import sha1
+
+# Key generation
+def generate_keys():
+    # Step 1: Choose prime q
+    q = 23  # A small prime number; in practice, this should be much larger
+
+    # Step 2: Choose prime p such that p - 1 is a multiple of q
+    p = 383  # A prime number where p-1 is divisible by q
+
+    # Step 3: Choose integer g
+    h = 2  # Primitive root modulo p
+    g = pow(h, (p - 1) // q, p)
+
+    # Step 4: Choose integer x as private key
+    x = random.randint(1, q - 1)
+
+    # Step 5: Compute y as public key
+    y = pow(g, x, p)
+
+    # Return public and private keys
+    public_key = (p, q, g, y)
+    private_key = (p, q, g, x)
+    return public_key, private_key
+
+# Signature generation
+def sign_message(private_key, message):
+    p, q, g, x = private_key
+    h = int(sha1(message.encode()).hexdigest(), 16)
+    while True:
+        k = random.randint(1, q - 1)
+        r = pow(g, k, p) % q
+        if r == 0:
+            continue
+        k_inv = pow(k, -1, q)
+        s = (k_inv * (h + r * x)) % q
+        if s != 0:
+            break
+    return (r, s)
+
+# Signature verification
+def verify_signature(public_key, message, signature):
+    p, q, g, y = public_key
+    r, s = signature
+    h = int(sha1(message.encode()).hexdigest(), 16)
+    if not (0 < r < q and 0 < s < q):
+        return False
+    w = pow(s, -1, q)
+    u1 = (h * w) % q
+    u2 = (r * w) % q
+    v = ((pow(g, u1, p) * pow(y, u2, p)) % p) % q
+    return v == r
+
+# Example usage
+if __name__ == "__main__":
+    # Generate key pair
+    public_key, private_key = generate_keys()
+
+    # Message to be signed
+    message = input("Enter a message: ")
+
+    # Sign the message
+    signature = sign_message(private_key, message)
+    print("Message:", message)
+    print("Signature:", signature)
+
+    # Verify the signature
+    is_valid = verify_signature(public_key, message, signature)
+    print("Is the signature valid?", is_valid)

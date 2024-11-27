@@ -1,0 +1,13 @@
+#MD5 Algorithm
+
+import hashlib
+
+def hash_md5(data):
+    md5_hash = hashlib.md5() 
+    md5_hash.update(data.encode('utf-8' )) 
+    return md5_hash.hexdigest() 
+    
+if __name__ == "__main__":
+    input_data = "Hello, this is a test message!"
+    md5_result = hash_md5(input_data)
+    print(f"MD5: {md5_result}")

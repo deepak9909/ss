@@ -1,0 +1,45 @@
+#Vigenere cipher
+
+def vigenere_encrypt(plain_text, keyword):
+    cipher_text = []
+    keyword = keyword.upper()
+    keyword_repeated = (keyword * ((len(plain_text) // len(keyword)) + 1))[:len(plain_text)]
+
+    for pt_char, kw_char in zip(plain_text.upper(), keyword_repeated):
+        if pt_char.isalpha(): 
+            pt_num = char_to_num(pt_char)
+            kw_num = char_to_num(kw_char)
+            cipher_num = (pt_num + kw_num) % 26
+            cipher_text.append(num_to_char(cipher_num))
+        else:
+            cipher_text.append(pt_char)
+
+    return ''.join(cipher_text)
+
+def vigenere_decrypt(cipher_text, keyword):
+    plain_text = []
+    keyword = keyword.upper() 
+    keyword_repeated = (keyword * ((len(cipher_text) // len(keyword)) + 1))[:len(cipher_text)]
+
+    for ct_char, kw_char in zip(cipher_text.upper(), keyword_repeated):
+        if ct_char.isalpha():
+            ct_num = char_to_num(ct_char)
+            kw_num = char_to_num(kw_char)
+            plain_num = (ct_num - kw_num) % 26
+            plain_text.append(num_to_char(plain_num))
+        else:
+            plain_text.append(ct_char)
+
+    return ''.join(plain_text)
+
+plain_text = "HELLO WORLD"
+keyword = "KEY"
+print("Plaintext:",plain_text)
+print("Keyword:",keyword)
+# Encrypt the plaintext
+encrypted_text = vigenere_encrypt(plain_text, keyword)
+print("Encrypted Text:", encrypted_text)
+
+# Decrypt the ciphertext
+decrypted_text = vigenere_decrypt(encrypted_text, keyword)
+print("Decrypted Text:", decrypted_text)

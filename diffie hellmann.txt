@@ -1,0 +1,40 @@
+Diffie Hellman key exchange algorithm
+
+def diffie_hellman_key_exchange():
+    print("=== Diffie-Hellman Key Exchange ===")
+    
+    # Input the prime number p and primitive root g
+    p = int(input("Enter (p): "))
+    g = int(input("Enter (g): "))
+
+    # Input private keys for Alice and Bob
+    a = int(input("Enter Alice's private key (a): "))
+    b = int(input("Enter Bob's private key (b): "))
+
+    # Compute public keys
+    A = pow(g, a, p)  # A = g^a mod p
+    B = pow(g, b, p)  # B = g^b mod p
+
+    # Compute shared secret keys
+    shared_key_alice = pow(B, a, p)  # (B^a mod p)
+    shared_key_bob = pow(A, b, p)    # (A^b mod p)
+
+    # Display results
+    print("\n=== Results ===")
+    print(f"Prime number (p): {p}")
+    print(f"Primitive root (g): {g}")
+    print(f"Alice's private key (a): {a}")
+    print(f"Bob's private key (b): {b}")
+    print(f"Alice's public key (A): {A}")
+    print(f"Bob's public key (B): {B}")
+    print(f"Shared secret key (calculated by Alice): {shared_key_alice}")
+    print(f"Shared secret key (calculated by Bob): {shared_key_bob}")
+
+    # Verify that the shared secret keys are the same
+    if shared_key_alice == shared_key_bob:
+        print("\nKey Exchange Successful! Shared secret key is:", shared_key_alice)
+    else:
+        print("\nKey Exchange Failed! Shared keys do not match.")
+
+# Run the Diffie-Hellman key exchange
+diffie_hellman_key_exchange()

@@ -1,0 +1,74 @@
+To Implement Hill Cipher using Python
+
+import numpy as np
+
+def validate_key_matrix(key_matrix, n):
+    det = int(np.round(np.linalg.det(key_matrix)))
+    det = det % 26  # Modulo 26
+    if det == 0 or np.gcd(det, 26) != 1:
+        raise ValueError("Invalid key matrix: Determinant is not invertible modulo 26.")
+
+def generate_key_matrix(key, n):
+    key = key.upper().replace(" ", "")
+    if len(key) != n * n:
+        raise ValueError("Key length must be equal to the square of the matrix size.")
+
+    key_matrix = []
+    for i in range(n):
+        row = [ord(char) - ord('A') for char in key[i * n:(i + 1) * n]]
+        key_matrix.append(row)
+
+    key_matrix = np.array(key_matrix)
+    validate_key_matrix(key_matrix, n)
+    return key_matrix
+
+def prepare_plaintext(plaintext, n):
+    plaintext = plaintext.upper().replace(" ", "")
+    if len(plaintext) % n != 0:
+        padding = n - (len(plaintext) % n)
+        plaintext += 'X' * padding
+    return plaintext
+
+def hill_encrypt(plaintext, key_matrix, n):
+    plaintext = prepare_plaintext(plaintext, n)
+    ciphertext = ""
+    for i in range(0, len(plaintext), n):
+        block = [ord(char) - ord('A') for char in plaintext[i:i + n]]
+        block = np.array(block).reshape((n, 1))
+        encrypted_block = np.dot(key_matrix, block) % 26
+        ciphertext += ''.join(chr(int(num) + ord('A')) for num in encrypted_block.flatten())
+    return ciphertext
+
+def hill_decrypt(ciphertext, key_matrix, n):
+    det = int(np.round(np.linalg.det(key_matrix)))
+    det_inv = pow(det, -1, 26)  # Modular multiplicative inverse of determinant mod 26
+    key_matrix_mod_inv = det_inv * np.round(np.linalg.inv(key_matrix) * det).astype(int) % 26
+    plaintext = ""
+    for i in range(0, len(ciphertext), n):
+        block = [ord(char) - ord('A') for char in ciphertext[i:i + n]]
+        block = np.array(block).reshape((n, 1))
+        decrypted_block = np.dot(key_matrix_mod_inv, block) % 26
+        plaintext += ''.join(chr(int(num) + ord('A')) for num in decrypted_block.flatten())
+    return plaintext
+
+# Take inputs from the user
+n = int(input("Enter the matrix size (n x n): "))
+key = input(f"Enter the key (length {n*n}): ").strip()
+plaintext = input("Enter the plaintext: ").strip()
+
+try:
+    # Generate the key matrix
+    key_matrix = generate_key_matrix(key, n)
+
+    # Encrypt and decrypt
+    ciphertext = hill_encrypt(plaintext, key_matrix, n)
+    decrypted_text = hill_decrypt(ciphertext, key_matrix, n)
+
+    # Display results
+    print("\nKey Matrix:\n", key_matrix)
+    print("Plaintext:", plaintext)
+    print("Encrypted Text:", ciphertext)
+    print("Decrypted Text:", decrypted_text)
+
+except ValueError as e:
+    print("Error:", e)
